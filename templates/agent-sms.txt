@@ -1,0 +1,1 @@
+New verified lead: {{clientName}}, {{clientPhone}}, looking to {{lookingToDo}}. REPLACE WITH EXACT CLIENT SMS COPY.
