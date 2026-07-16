@@ -1,1 +1,1 @@
-Hi {{clientName}}, thanks for your request! {{agentName}} will reach out shortly at the number you provided. REPLACE WITH EXACT CLIENT SMS COPY.
+Hi {{clientName}}, thanks for your request! {{agentName}} will reach out shortly at the number you provided.
