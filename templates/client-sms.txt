@@ -1,1 +1,1 @@
-Hi {{clientName}}, thanks for your request! {{agentName}} will reach out shortly at the number you provided.
+Southlight: You’re all set. We’ve reached out to Lance Willard on your behalf—check your email for your introduction.

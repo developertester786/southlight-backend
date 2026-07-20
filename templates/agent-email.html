@@ -1,16 +1,41 @@
-Subject: New Client Referral
+Subject: New Client Referral – {{county}} | {{requestType}}
 
 <p>Dear {{agentName}},</p>
-<p>A client from the Southlight referral platform has submitted a request to work with you.</p>
+
+<p>
+  A client from the <strong>Southlight</strong> referral platform has submitted a request to work with you to represent
+  them in <strong>{{requestDescription}}</strong> in <strong>{{county}}</strong>.
+</p>
+
 <p><strong>Client Information</strong></p>
+
 <p>
   {{clientName}}<br>
-  Looking to: {{lookingToDo}}<br>
+  Looking to: {{requestDescription}}<br>
   Phone: {{clientPhone}}<br>
-  Email: {{clientEmail}}
+  Email: <a href="mailto:{{clientEmail}}">{{clientEmail}}</a>
 </p>
-<p>If this request is received during a regular business day, please reach out to {{clientName}} <strong>within the hour
-    if your schedule allows</strong>, or <strong>no later than the end of the business day (5pm EST)</strong>.</p>
-<p><strong>Action requested:</strong> Please confirm receipt of this request and that you have contacted the client.
-  Thank you in advance for your diligence in responding promptly and for providing exceptional representation.</p>
-<p>Best regards,<br>Southlight</p>
+
+<p>
+  If this request is received during a regular business day, please reach out to {{clientName}}
+  <strong>within the hour if your schedule allows</strong>, or
+  <strong>no later than the end of the business day (5pm EST)</strong>.
+</p>
+
+<p>
+  <strong>Action requested:</strong> Please confirm receipt of this request and that you have contacted the client.
+  Thank you in advance for your diligence in responding promptly and for providing exceptional representation.
+</p>
+
+<p>
+  Best regards,<br><br>
+
+  Evan Karge
+</p>
+
+<p>
+  <strong>Evan Karge</strong> | Southlight<br>
+  Direct – 802-557-4894<br>
+  <a href="mailto:evan.karge@southlight.co">evan.karge@southlight.co</a><br>
+  <a href="https://southlight.co">southlight.co</a>
+</p>

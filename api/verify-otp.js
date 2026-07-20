@@ -22,10 +22,6 @@ export default async function handler(req, res) {
     try {
       check = await checkVerificationCode(phone, code);
     } catch (twilioErr) {
-      // Twilio throws (rather than returning a "pending"/"canceled" status) when there's
-      // no active session left to check against — e.g. the code was already used, expired,
-      // or a new one was never requested. Surface this distinctly so the front end can show
-      // "Please request a new code" instead of the generic error modal.
       if (twilioErr.status === 404 || twilioErr.code === 20404) {
         return res.status(400).json({ verified: false, reason: 'expired_or_not_found' });
       }
@@ -45,7 +41,13 @@ export default async function handler(req, res) {
       agent,
     });
 
-    res.status(200).json({ verified: true, success: true, notificationsSent: sent, notificationsFailed: failed });
+    res.status(200).json({
+      verified: true,
+      success: true,
+      agentName: agent.name,
+      notificationsSent: sent,
+      notificationsFailed: failed,
+    });
   } catch (err) {
     console.error('verify-otp error:', err);
     res.status(500).json({ verified: false, reason: 'server_error' });

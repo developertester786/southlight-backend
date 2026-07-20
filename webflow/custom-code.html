@@ -169,9 +169,9 @@
 <div class="otp-overlay" id="successModal">
   <div class="otp-card">
     <div class="otp-icon">✓</div>
-    <h3>Request received</h3>
-    <p>Your request has been verified and sent — the agent will reach out shortly.</p>
-    <button class="otp-verify-btn" id="successCloseBtn">Close</button>
+    <h3>Phone Number Verified.<br>Introduction Sent.</h3>
+    <p id="successSubtext">You'll receive an introductory email shortly.</p>
+    <button class="otp-verify-btn" id="successCloseBtn">Return to Home</button>
   </div>
 </div>
 
@@ -185,6 +185,7 @@
     const phoneInput = document.getElementById('Phone');
     const lookingToDoSelect = document.getElementById('What-are-you-looking-to-do');
 
+    // Agent slug: each agent has their own CMS Collection Page at /agents/{slug},
     function getAgentId() {
       const testAgent = document.body.getAttribute('data-test-agent');
       if (testAgent) return testAgent;
@@ -204,8 +205,10 @@
       afterEl.insertAdjacentElement('afterend', el);
       return el;
     }
+    const nameError = createInlineError(nameInput, 'nameError');
     const emailError = createInlineError(emailInput, 'emailError');
     const phoneError = createInlineError(phoneInput, 'phoneError');
+    const lookingToDoError = createInlineError(lookingToDoSelect, 'lookingToDoError');
 
     function showError(el, message) {
       el.textContent = message;
@@ -235,7 +238,7 @@
       }
     });
 
-
+    // Phone formatting/validation
     const DEFAULT_COUNTRY_CODE = '+1';
 
     function toE164(value) {
@@ -246,7 +249,6 @@
       return DEFAULT_COUNTRY_CODE + trimmed.replace(/\D/g, '');
     }
 
-    // permissive across countries rather than assuming a fixed 10-digit length.
     function isValidPhone(value) {
       const e164 = toE164(value);
       return /^\+\d{8,15}$/.test(e164);
@@ -289,11 +291,41 @@
       e.preventDefault();
       e.stopImmediatePropagation();
 
-      if (!isValidPhone(phoneInput.value)) {
-        showError(phoneError, 'Please enter a valid phone number.');
-        return;
+      // Required-field validation matching the Figma reference: each empty field
+      let hasError = false;
+
+      if (!nameInput.value.trim()) {
+        showError(nameError, 'Full name is required.');
+        hasError = true;
+      } else {
+        hideError(nameError);
       }
-      hideError(phoneError);
+
+      if (!emailInput.value.trim()) {
+        showError(emailError, 'Email is required.');
+        hasError = true;
+      } else {
+        hideError(emailError);
+      }
+
+      if (!phoneInput.value.trim()) {
+        showError(phoneError, 'Phone number is required.');
+        hasError = true;
+      } else if (!isValidPhone(phoneInput.value)) {
+        showError(phoneError, 'Please enter a valid phone number.');
+        hasError = true;
+      } else {
+        hideError(phoneError);
+      }
+
+      if (!lookingToDoSelect.value) {
+        showError(lookingToDoError, 'Please select an option.');
+        hasError = true;
+      } else {
+        hideError(lookingToDoError);
+      }
+
+      if (hasError) return;
 
       const phoneE164 = toE164(phoneInput.value);
 
@@ -355,6 +387,9 @@
 
         if (res.ok && data.verified) {
           hide(otpOverlay);
+          const agentName = data.agentName || 'Your agent';
+          document.getElementById('successSubtext').textContent =
+            `You'll receive an introductory email shortly. ${agentName} typically follows up within the hour.`;
           show(successModal);
         } else if (data.reason === 'incorrect_code') {
           otpBoxes.forEach((b) => b.classList.add('otp-error'));
@@ -379,10 +414,9 @@
       hide(errorModal);
     });
 
-    // Success modal close
+    // Success modal: "Return to Home" navigates to the site's homepage
     document.getElementById('successCloseBtn').addEventListener('click', () => {
-      hide(successModal);
-      form.reset();
+      window.location.href = '/';
     });
   })();
 </script>

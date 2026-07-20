@@ -1,1 +1,1 @@
-New verified lead: {{clientName}}, {{clientPhone}}, looking to {{lookingToDo}}.
+Southlight: New client request received. Check your email for the introduction and please reach out when you can.
