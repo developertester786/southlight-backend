@@ -8,8 +8,10 @@
 import { checkVerificationCode } from '../lib/twilioClient.js';
 import { getAgent } from '../lib/agents.js';
 import { sendAllNotifications } from '../lib/notifications.js';
+import { applyCors } from '../lib/cors.js';
 
 export default async function handler(req, res) {
+  if (applyCors(req, res)) return;
   if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
 
   const { phone, code, name, email, lookingToDo, agentId } = req.body || {};

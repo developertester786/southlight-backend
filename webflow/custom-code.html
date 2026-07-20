@@ -1,23 +1,17 @@
-<!--
-  PASTE THIS ENTIRE BLOCK into:
-  Webflow → Page Settings (or Project Settings, if it should apply site-wide)
-  → Custom Code → "Before </body> tag"
-
-  Then replace API_BASE below with your real deployed backend URL, e.g.
-  https://yourproject.vercel.app/api
--->
-
 <style>
-  /* ---------- OTP modal ---------- */
-  .otp-overlay, .err-overlay {
+  .otp-overlay,
+  .err-overlay {
     display: none;
-    position: fixed; inset: 0;
-    background: rgba(0,0,0,0.6);
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.6);
     z-index: 9999;
     align-items: center;
     justify-content: center;
   }
-  .otp-card, .err-card {
+
+  .otp-card,
+  .err-card {
     background: #fff;
     border-radius: 16px;
     padding: 40px 32px;
@@ -26,44 +20,117 @@
     text-align: center;
     font-family: inherit;
   }
+
   .otp-icon {
-    width: 56px; height: 56px;
+    width: 56px;
+    height: 56px;
     border-radius: 50%;
     background: #34a853;
-    display: flex; align-items: center; justify-content: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     margin: 0 auto 16px;
   }
+
   .err-icon {
-    width: 56px; height: 56px;
+    width: 56px;
+    height: 56px;
     border-radius: 50%;
     background: #fdecea;
     color: #d93025;
-    display: flex; align-items: center; justify-content: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     margin: 0 auto 16px;
     font-size: 28px;
   }
-  .otp-card h3, .err-card h3 { margin: 0 0 8px; font-size: 20px; }
-  .otp-card p, .err-card p { margin: 0 0 20px; color: #666; font-size: 14px; }
-  .otp-boxes { display: flex; gap: 8px; justify-content: center; margin-bottom: 12px; }
+
+  .otp-card h3,
+  .err-card h3 {
+    margin: 0 0 8px;
+    font-size: 20px;
+  }
+
+  .otp-card p,
+  .err-card p {
+    margin: 0 0 20px;
+    color: #666;
+    font-size: 14px;
+  }
+
+  .otp-boxes {
+    display: flex;
+    gap: 8px;
+    justify-content: center;
+    margin-bottom: 12px;
+  }
+
   .otp-box {
-    width: 44px; height: 52px;
-    text-align: center; font-size: 20px;
-    border: 1px solid #ccc; border-radius: 8px;
+    width: 44px;
+    height: 52px;
+    text-align: center;
+    font-size: 20px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
   }
-  .otp-box.otp-error { border-color: #d93025; }
-  .otp-code-error { color: #d93025; font-size: 13px; margin: 0 0 12px; display: none; }
-  .otp-verify-btn, .err-retry-btn {
-    width: 100%; padding: 14px; border: none; border-radius: 8px;
-    background: #111; color: #fff; font-size: 15px; cursor: pointer; margin-bottom: 8px;
+
+  .otp-box.otp-error {
+    border-color: #d93025;
   }
+
+  .otp-code-error {
+    color: #d93025;
+    font-size: 13px;
+    margin: 0 0 12px;
+    display: none;
+  }
+
+  .otp-verify-btn,
+  .err-retry-btn {
+    width: 100%;
+    padding: 14px;
+    border: none;
+    border-radius: 8px;
+    background: #111;
+    color: #fff;
+    font-size: 15px;
+    cursor: pointer;
+    margin-bottom: 8px;
+  }
+
   .err-back-btn {
-    width: 100%; padding: 14px; border: 1px solid #ccc; border-radius: 8px;
-    background: #fff; color: #111; font-size: 15px; cursor: pointer;
+    width: 100%;
+    padding: 14px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    background: #fff;
+    color: #111;
+    font-size: 15px;
+    cursor: pointer;
   }
-  .otp-resend { font-size: 13px; margin-top: 12px; }
-  .otp-resend a { cursor: pointer; text-decoration: underline; }
-  .otp-secure-note { font-size: 12px; color: #999; margin-top: 12px; }
-  .inline-field-error { color: #d93025; font-size: 13px; margin-top: 6px; display: none; }
+
+  .otp-resend {
+    font-size: 13px;
+    margin-top: 12px;
+  }
+
+  .otp-resend a {
+    cursor: pointer;
+    text-decoration: underline;
+  }
+
+  .otp-secure-note {
+    font-size: 12px;
+    color: #999;
+    margin-top: 12px;
+  }
+
+  .inline-field-error {
+    color: #d93025;
+    font-size: 13px;
+    margin-top: 6px;
+    display: none;
+  }
 </style>
 
 <!-- OTP verification modal -->
@@ -109,195 +176,213 @@
 </div>
 
 <script>
-(function () {
-  const API_BASE = 'https://YOUR-PROJECT.vercel.app/api'; // <-- replace with real backend URL
+  (function () {
+    const API_BASE = 'https://YOUR-PROJECT.vercel.app/api'; // replace with real backend URL
 
-  const form = document.getElementById('email-form');
-  const nameInput = document.getElementById('name');
-  const emailInput = document.getElementById('email');
-  const phoneInput = document.getElementById('Phone');
-  const lookingToDoSelect = document.getElementById('What-are-you-looking-to-do');
+    const form = document.getElementById('email-form');
+    const nameInput = document.getElementById('name');
+    const emailInput = document.getElementById('email');
+    const phoneInput = document.getElementById('Phone');
+    const lookingToDoSelect = document.getElementById('What-are-you-looking-to-do');
 
-  // --- Agent ID: adjust this to however the agent is actually identified on the page.
-  // Common options: a data attribute on <body>, a hidden form field, or the URL slug.
-  // Placeholder below reads a data-agent-id attribute on <body> — confirm and update.
-  function getAgentId() {
-    return document.body.getAttribute('data-agent-id') || '';
-  }
+    function getAgentId() {
+      const testAgent = document.body.getAttribute('data-test-agent');
+      if (testAgent) return testAgent;
 
-  // --- Inline error elements (created dynamically since they don't exist in Webflow yet)
-  function createInlineError(afterEl, id) {
-    const el = document.createElement('p');
-    el.id = id;
-    el.className = 'inline-field-error';
-    afterEl.insertAdjacentElement('afterend', el);
-    return el;
-  }
-  const emailError = createInlineError(emailInput, 'emailError');
-  const phoneError = createInlineError(phoneInput, 'phoneError');
+      const params = new URLSearchParams(window.location.search);
+      if (params.get('agent')) return params.get('agent');
 
-  function showError(el, message) {
-    el.textContent = message;
-    el.style.display = 'block';
-  }
-  function hideError(el) {
-    el.style.display = 'none';
-  }
+      const parts = window.location.pathname.split('/').filter(Boolean);
+      return parts[parts.length - 1] || '';
+    }
 
-  // --- Email validation on blur
-  emailInput.addEventListener('blur', async () => {
-    if (!emailInput.value) return;
-    try {
-      const res = await fetch(`${API_BASE}/validate-email`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email: emailInput.value }),
-      });
-      const data = await res.json();
-      if (!data.valid) {
-        showError(emailError, 'Please enter a valid email address.');
-      } else {
-        hideError(emailError);
+    // Inline error elements (created dynamically since they don't exist in Webflow yet)
+    function createInlineError(afterEl, id) {
+      const el = document.createElement('p');
+      el.id = id;
+      el.className = 'inline-field-error';
+      afterEl.insertAdjacentElement('afterend', el);
+      return el;
+    }
+    const emailError = createInlineError(emailInput, 'emailError');
+    const phoneError = createInlineError(phoneInput, 'phoneError');
+
+    function showError(el, message) {
+      el.textContent = message;
+      el.style.display = 'block';
+    }
+    function hideError(el) {
+      el.style.display = 'none';
+    }
+
+    // Email validation on blur
+    emailInput.addEventListener('blur', async () => {
+      if (!emailInput.value) return;
+      try {
+        const res = await fetch(`${API_BASE}/validate-email`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email: emailInput.value }),
+        });
+        const data = await res.json();
+        if (!data.valid) {
+          showError(emailError, 'Please enter a valid email address.');
+        } else {
+          hideError(emailError);
+        }
+      } catch (err) {
+        console.error('Email validation failed', err);
       }
-    } catch (err) {
-      console.error('Email validation failed', err);
-    }
-  });
-
-  // --- Local phone format check (10 digit US number) — no API call needed
-  function isValidPhone(value) {
-    return /^\d{10}$/.test(value.replace(/\D/g, ''));
-  }
-
-  // --- Modal helpers
-  const otpOverlay = document.getElementById('otpOverlay');
-  const errorModal = document.getElementById('errorModal');
-  const successModal = document.getElementById('successModal');
-  const otpSubtext = document.getElementById('otpSubtext');
-  const codeError = document.getElementById('codeError');
-  const otpBoxes = [1, 2, 3, 4, 5, 6].map((n) => document.getElementById(`otp-${n}`));
-
-  function show(el) { el.style.display = 'flex'; }
-  function hide(el) { el.style.display = 'none'; }
-
-  function clearOtpBoxes() {
-    otpBoxes.forEach((b) => { b.value = ''; b.classList.remove('otp-error'); });
-    hide2(codeError);
-  }
-  function hide2(el) { el.style.display = 'none'; }
-
-  // Auto-advance between OTP boxes
-  otpBoxes.forEach((box, i) => {
-    box.addEventListener('input', () => {
-      box.value = box.value.replace(/\D/g, '').slice(0, 1);
-      if (box.value && otpBoxes[i + 1]) otpBoxes[i + 1].focus();
     });
-    box.addEventListener('keydown', (e) => {
-      if (e.key === 'Backspace' && !box.value && otpBoxes[i - 1]) otpBoxes[i - 1].focus();
+
+
+    const DEFAULT_COUNTRY_CODE = '+1';
+
+    function toE164(value) {
+      const trimmed = value.trim();
+      if (trimmed.startsWith('+')) {
+        return '+' + trimmed.slice(1).replace(/\D/g, '');
+      }
+      return DEFAULT_COUNTRY_CODE + trimmed.replace(/\D/g, '');
+    }
+
+    // permissive across countries rather than assuming a fixed 10-digit length.
+    function isValidPhone(value) {
+      const e164 = toE164(value);
+      return /^\+\d{8,15}$/.test(e164);
+    }
+
+    // Modal helpers
+    const otpOverlay = document.getElementById('otpOverlay');
+    const errorModal = document.getElementById('errorModal');
+    const successModal = document.getElementById('successModal');
+    const otpSubtext = document.getElementById('otpSubtext');
+    const codeError = document.getElementById('codeError');
+    const otpBoxes = [1, 2, 3, 4, 5, 6].map((n) => document.getElementById(`otp-${n}`));
+
+    function show(el) { el.style.display = 'flex'; }
+    function hide(el) { el.style.display = 'none'; }
+
+    function clearOtpBoxes() {
+      otpBoxes.forEach((b) => { b.value = ''; b.classList.remove('otp-error'); });
+      hide2(codeError);
+    }
+    function hide2(el) { el.style.display = 'none'; }
+
+    // Auto-advance between OTP boxes
+    otpBoxes.forEach((box, i) => {
+      box.addEventListener('input', () => {
+        box.value = box.value.replace(/\D/g, '').slice(0, 1);
+        if (box.value && otpBoxes[i + 1]) otpBoxes[i + 1].focus();
+      });
+      box.addEventListener('keydown', (e) => {
+        if (e.key === 'Backspace' && !box.value && otpBoxes[i - 1]) otpBoxes[i - 1].focus();
+      });
     });
-  });
 
-  function getOtpCode() {
-    return otpBoxes.map((b) => b.value).join('');
-  }
-
-  // --- Form submit: validate phone locally, then request OTP
-  form.addEventListener('submit', async (e) => {
-    e.preventDefault();
-    e.stopImmediatePropagation();
-
-    if (!isValidPhone(phoneInput.value)) {
-      showError(phoneError, 'Please enter a valid 10-digit phone number.');
-      return;
+    function getOtpCode() {
+      return otpBoxes.map((b) => b.value).join('');
     }
-    hideError(phoneError);
 
-    try {
-      const res = await fetch(`${API_BASE}/send-otp`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ phone: phoneInput.value }),
-      });
-      if (!res.ok) throw new Error('send-otp failed');
+    // Form submit: validate phone locally, then request OTP
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      e.stopImmediatePropagation();
 
-      otpSubtext.textContent = `We've sent a 6-digit code via SMS to ${phoneInput.value}`;
-      clearOtpBoxes();
-      show(otpOverlay);
-      otpBoxes[0].focus();
-    } catch (err) {
-      console.error(err);
-      show(errorModal);
-    }
-  });
+      if (!isValidPhone(phoneInput.value)) {
+        showError(phoneError, 'Please enter a valid phone number.');
+        return;
+      }
+      hideError(phoneError);
 
-  // --- Resend code
-  document.getElementById('resendBtn').addEventListener('click', async () => {
-    try {
-      const res = await fetch(`${API_BASE}/resend-otp`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ phone: phoneInput.value }),
-      });
-      if (!res.ok) throw new Error('resend-otp failed');
-      clearOtpBoxes();
-      otpBoxes[0].focus();
-    } catch (err) {
-      console.error(err);
-      hide(otpOverlay);
-      show(errorModal);
-    }
-  });
+      const phoneE164 = toE164(phoneInput.value);
 
-  // --- Verify code
-  document.getElementById('verifyBtn').addEventListener('click', async () => {
-    const code = getOtpCode();
-    if (code.length !== 6) return;
+      try {
+        const res = await fetch(`${API_BASE}/send-otp`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ phone: phoneE164 }),
+        });
+        if (!res.ok) throw new Error('send-otp failed');
 
-    try {
-      const res = await fetch(`${API_BASE}/verify-otp`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          phone: phoneInput.value,
-          code,
-          name: nameInput.value,
-          email: emailInput.value,
-          lookingToDo: lookingToDoSelect.value,
-          agentId: getAgentId(),
-        }),
-      });
-      const data = await res.json();
+        otpSubtext.textContent = `We've sent a 6-digit code via SMS to ${phoneE164}`;
+        clearOtpBoxes();
+        show(otpOverlay);
+        otpBoxes[0].focus();
+      } catch (err) {
+        console.error(err);
+        show(errorModal);
+      }
+    });
 
-      if (res.ok && data.verified) {
-        hide(otpOverlay);
-        show(successModal);
-      } else if (data.reason === 'incorrect_code') {
-        otpBoxes.forEach((b) => b.classList.add('otp-error'));
-        codeError.style.display = 'block';
-      } else {
+    // Resend code
+    document.getElementById('resendBtn').addEventListener('click', async () => {
+      try {
+        const res = await fetch(`${API_BASE}/resend-otp`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ phone: toE164(phoneInput.value) }),
+        });
+        if (!res.ok) throw new Error('resend-otp failed');
+        clearOtpBoxes();
+        otpBoxes[0].focus();
+      } catch (err) {
+        console.error(err);
         hide(otpOverlay);
         show(errorModal);
       }
-    } catch (err) {
-      console.error(err);
-      hide(otpOverlay);
-      show(errorModal);
-    }
-  });
+    });
 
-  // --- Error modal actions
-  document.getElementById('tryAgainBtn').addEventListener('click', () => {
-    hide(errorModal);
-    show(otpOverlay);
-  });
-  document.getElementById('backBtn').addEventListener('click', () => {
-    hide(errorModal);
-  });
+    // Verify code
+    document.getElementById('verifyBtn').addEventListener('click', async () => {
+      const code = getOtpCode();
+      if (code.length !== 6) return;
 
-  // --- Success modal close
-  document.getElementById('successCloseBtn').addEventListener('click', () => {
-    hide(successModal);
-    form.reset();
-  });
-})();
+      try {
+        const res = await fetch(`${API_BASE}/verify-otp`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            phone: toE164(phoneInput.value),
+            code,
+            name: nameInput.value,
+            email: emailInput.value,
+            lookingToDo: lookingToDoSelect.value,
+            agentId: getAgentId(),
+          }),
+        });
+        const data = await res.json();
+
+        if (res.ok && data.verified) {
+          hide(otpOverlay);
+          show(successModal);
+        } else if (data.reason === 'incorrect_code') {
+          otpBoxes.forEach((b) => b.classList.add('otp-error'));
+          codeError.style.display = 'block';
+        } else {
+          hide(otpOverlay);
+          show(errorModal);
+        }
+      } catch (err) {
+        console.error(err);
+        hide(otpOverlay);
+        show(errorModal);
+      }
+    });
+
+    // Error modal actions
+    document.getElementById('tryAgainBtn').addEventListener('click', () => {
+      hide(errorModal);
+      show(otpOverlay);
+    });
+    document.getElementById('backBtn').addEventListener('click', () => {
+      hide(errorModal);
+    });
+
+    // Success modal close
+    document.getElementById('successCloseBtn').addEventListener('click', () => {
+      hide(successModal);
+      form.reset();
+    });
+  })();
 </script>

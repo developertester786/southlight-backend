@@ -5,8 +5,10 @@
 // can call it independently and show its own "code resent" confirmation.
 
 import { sendVerificationCode } from '../lib/twilioClient.js';
+import { applyCors } from '../lib/cors.js';
 
 export default async function handler(req, res) {
+  if (applyCors(req, res)) return;
   if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
 
   const { phone } = req.body || {};
